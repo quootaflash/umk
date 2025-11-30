@@ -1,541 +1,267 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dunnak Merchant • Portal Mitra Resmi 2025</title>
-  <meta name="description" content="Portal resmi merchant Dunnak — platform pengantaran makanan berbasis AI terdepan di Indonesia.">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .gradient-primary { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-    .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); }
-    .glow { box-shadow: 0 0 80px rgba(16,185,129,0.4); }
-    .card { transition: all 0.5s ease; }
-    .card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px rgba(16,185,129,0.25); }
-    .floating { animation: float 12s ease-in-out infinite; }
-    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Resmi – Nama Perusahaan Anda</title>
+    <meta name="description" content="Formulir resmi dan aman untuk pendaftaran, survei, atau pengajuan.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-hover: #1e3a8a;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --danger: #dc2626;
+            --success: #059669;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER PREMIUM */
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo img {
+            height: 44px;
+            max-width: 220px;
+            object-fit: contain;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+        .secure-badge {
+            background: rgba(34,197,94,0.1);
+            color: var(--success);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* MAIN */
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .container { width: 100%; max-width: 1000px; }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .card-header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; }
+        .card-header p { font-size: 1.15rem; opacity: 0.95; }
+
+        .form-container {
+            position: relative;
+            min-height: 800px;
+            background: white;
+        }
+
+        iframe {
+            width: 100%;
+            height: 95vh;
+            min-height: 720px;
+            border: none;
+            display: block;
+        }
+
+        /* Loading & Error States */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: opacity 0.4s;
+        }
+        .spinner {
+            width: 56px; height: 56px;
+            border: 5px solid #f3f4f6;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-state {
+            color: var(--danger);
+            max-width: 500px;
+        }
+        .error-state h3 { margin: 1rem 0 0.75rem; font-size: 1.4rem; }
+        .btn-direct {
+            margin-top: 1.5px;
+            background: var(--primary);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .btn-direct:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        footer {
+            background: var(--gray-900);
+            color: #94a3b8;
+            text-align: center;
+            padding: 2.5rem 20px;
+            font-size: 0.95rem;
+        }
+        footer a { color: #60a5fa; }
+
+        @media (max-width: 768px) {
+            .header-inner { height: 70px; padding: 0 16px; }
+            .logo img { height: 38px; }
+            .card-header { padding: 2rem 1.5rem; }
+            .card-header h1 { font-size: 2rem; }
+            iframe { min-height: 680px; }
+        }
+        @media (max-width: 480px) {
+            .secure-badge { font-size: 0.8rem; padding: 5px 10px; }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body>
 
-<!-- HERO MERCHANT – FINAL 2025 (LEVEL GRABMERCHANT / GOBIZ / SHOPEE SELLER CENTER) -->
-<section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-900 to-black overflow-hidden">
-  <!-- Background Pattern Premium -->
-  <div class="absolute inset-0 opacity-30">
-    <div class="absolute inset-0" style="background: url('data:image/svg+xml,%3Csvg width=\"100\" height=\"100\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" stroke=\"%23ffffff\" stroke-opacity=\"0.05\" stroke-width=\"2\"%3E%3Cpath d=\"M50 0L61.8 35.4H100L70.4 58.6L82.2 94L50 70.8L17.8 94L29.6 58.6L0 35.4H38.2L50 0Z\"/%3E%3C/g%3E%3C/svg%3E')"></div>
-  </div>
-
-  <!-- Overlay Gelap Elegan -->
-  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-
-  <div class="relative max-w-7xl mx-auto px-6 lg:px-12 text-center">
-    <!-- Logo Dunnak dengan Glow -->
-    <div class="mb-12">
-      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6-JhY6g9H4ggtXPHCO7pTjErtprKfSRlgttoFgT4LcX-O2ROw-oxj7Ntr3r7cY6TdN5AMrwDJ7hyfyU1DI4ASMZ_Mw2chnMaXIDiWHZ-8X3H1Lhz-PjI7KIh2716aY_g4FIxL2Fe4OxBsIEAyE52WrLYS-p1La1U_mMHuVcQvFK-Np9l-ZixakqnZjx44/s3264/20251120_174337.png" 
-           alt="Dunnak Merchant" class="h-20 lg:h-28 mx-auto drop-shadow-2xl">
-    </div>
-
-    <!-- Judul Utama -->
-    <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white leading-tight tracking-tight">
-      Dunnak Merchant
-      <br>
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400">
-        Business Platform 2025
-      </span>
-    </h1>
-
-    <!-- Sub Judul -->
-    <p class="mt-8 text-xl sm:text-2xl lg:text-3xl text-gray-200 font-light max-w-5xl mx-auto leading-relaxed">
-      Platform pengantaran berbasis AI resmi untuk merchant Kalibening & Indonesia.<br>
-      Didukung teknologi canggih, logistik terintegrasi, dan dukungan 24/7.
-    </p>
-
-    <!-- Trust Badge -->
-    <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6">
-      <span class="inline-flex items-center gap-3 bg-white/10 backdrop-blur px-8 py-4 rounded-full text-lg font-medium">
-        <svg class="w-7 h-7 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-        </svg>
-        Dipercaya 600+ Merchant
-      </span>
-      <span class="inline-flex items-center gap-3 bg-white/10 backdrop-blur px-8 py-4 rounded-full text-lg font-medium">
-        <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        100% Gratis Pendaftaran
-      </span>
-    </div>
-
-    <!-- CTA Button Premium -->
-    <div class="mt-16">
-      <a href="#daftar" 
-         class="group relative inline-flex items-center gap-6 bg-white text-emerald-700 font-black text-2xl sm:text-3xl lg:text-4xl xl:text-5xl px-20 py-8 lg:py-10 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-500 overflow-hidden">
-        <span class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-30 transition-opacity duration-500"></span>
-        <span class="relative flex items-center gap-6">
-          Daftar Sekarang
-          <svg class="w-12 h-12 group-hover:translate-x-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-          </svg>
-        </span>
-      </a>
-    </div>
-  </div>
-</section>
-<!-- STATISTIK MERCHANT – FINAL 2025 (LEVEL UNICORN) -->
-<section class="py-24 lg:py-32 bg-black">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <!-- Judul Premium -->
-    <div class="text-center mb-20">
-      <h2 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-tight">
-        Performa Platform Dunnak
-      </h2>
-      <p class="mt-4 text-xl lg:text-2xl text-gray-400 font-light max-w-4xl mx-auto">
-        Data real-time dari 600+ merchant aktif di seluruh Kalibening & sekitarnya
-      </p>
-    </div>
-
-    <!-- Grid Statistik dengan Animasi Angka -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
-      <!-- Stat 1 -->
-      <div class="group relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl rounded-3xl p-10 text-center border border-emerald-700/30 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-        <div class="relative z-10">
-          <p class="text-5xl sm:text-6xl lg:text-7xl font-black text-emerald-400 count" data-target="600">0</p>
-          <p class="mt-4 text-xl lg:text-2xl font-bold text-white">Merchant Aktif</p>
-          <p class="text-sm text-gray-400 mt-2">Terus bertambah setiap minggu</p>
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <!-- GANTI DENGAN LOGO KAMU (ukuran ideal: 220x60 px, format PNG/SVG) -->
+                <img src="https://via.placeholder.com/220x60/1e40af/ffffff?text=LOGO+KAMU" alt="Logo Perusahaan">
+            </div>
+            <div class="header-right">
+                <div class="secure-badge">
+                    <i class="fas fa-lock"></i>
+                    Aman & Terenskripsi
+                </div>
+            </div>
         </div>
-      </div>
+    </header>
 
-      <!-- Stat 2 -->
-      <div class="group relative bg-gradient-to-br from-teal-900/50 to-teal-800/30 backdrop-blur-xl rounded-3xl p-10 text-center border border-teal-700/30 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-teal-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-        <div class="relative z-10">
-          <p class="text-5xl sm:text-6xl lg:text-7xl font-black text-teal-400 count" data-target="387">0</p>
-          <p class="mt-4 text-xl lg:text-2xl font-bold text-white">Rata-rata Kenaikan Order</p>
-          <p class="text-sm text-gray-400 mt-2">Dibandingkan sebelum gabung Dunnak</p>
+    <main>
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Formulir Resmi</h1>
+                    <p>Isi dengan data yang valid. Kami menjaga privasi Anda dengan sangat serius.</p>
+                </div>
+
+                <div class="form-container" id="formContainer">
+                    <!-- Loading -->
+                    <div class="overlay" id="loadingOverlay">
+                        <div class="spinner"></div>
+                        <div><strong>Memuat formulir dengan aman...</strong><br>Koneksi terenkripsi SSL</div>
+                    </div>
+
+                    <!-- Error Fallback -->
+                    <div class="overlay" id="errorOverlay" style="display:none;">
+                        <i class="fas fa-exclamation-triangle fa-4x" style="color:var(--danger);"></i>
+                        <div class="error-state">
+                            <h3>Formulir tidak dapat dimuat</h3>
+                            <p>Kemungkinan karena pemblokiran jaringan, ekstensi browser, atau masalah sementara Google Forms.</p>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLScKpEn0s6kkYi0R1nDKOXkon6Cyv9VRsMPEdxjaKMx03BF42Q/viewform" 
+                               target="_blank" class="btn-direct">
+                                Buka Formulir di Tab Baru
+                            </a>
+                            <br><br>
+                            <small>Jika masalah berlanjut, hubungi kami di <strong>info@domainkamu.com</strong></small>
+                        </div>
+                    </div>
+
+                    <iframe
+                        src="https://docs.google.com/forms/d/e/1FAIpQLScKpEn0s6kkYi0R1nDKOXkon6Cyv9VRsMPEdxjaKMx03BF42Q/viewform?embedded=true"
+                        onload="onIframeLoad()"
+                        onerror="onIframeError()"
+                        allowfullscreen>
+                        Loading…
+                    </iframe>
+                </div>
+            </div>
         </div>
-      </div>
+    </main>
 
-      <!-- Stat 3 -->
-      <div class="group relative bg-gradient-to-br from-cyan-900/50 to-cyan-800/30 backdrop-blur-xl rounded-3xl p-10 text-center border border-cyan-700/30 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-cyan-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-        <div class="relative z-10">
-          <p class="text-5xl sm:text-6xl lg:text-7xl font-black text-cyan-400">4.9<span class="text-3xl">★</span></p>
-          <p class="mt-4 text-xl lg:text-2xl font-bold text-white">Rating Platform</p>
-          <p class="text-sm text-gray-400 mt-2">Dari 15.000+ ulasan pelanggan</p>
-        </div>
-      </div>
+    <footer>
+        © 2025 <strong>Nama Perusahaan Anda</strong>. Semua hak cipta dilindungi.<br>
+        Kontak: <a href="mailto:info@domainkamu.com">info@domainkamu.com</a> | 
+        <a href="https://domainkamu.com" target="_blank">domainkamu.com</a>
+    </footer>
 
-      <!-- Stat 4 -->
-      <div class="group relative bg-gradient-to-br from-purple-900/50 to-purple-800/30 backdrop-blur-xl rounded-3xl p-10 text-center border border-purple-700/30 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-        <div class="relative z-10">
-          <p class="text-5xl sm:text-6xl lg:text-7xl font-black text-purple-400">Rp 0</p>
-          <p class="mt-4 text-xl lg:text-2xl font-bold text-white">Biaya Pendaftaran</p>
-          <p class="text-sm text-gray-400 mt-2">Gratis selamanya — tanpa komisi tersembunyi</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <script>
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const errorOverlay   = document.getElementById('errorOverlay');
+        let loadTimeout;
 
-<script>
-// === ANIMASI ANGKA OTOMATIS (SUPER SMOOTH) ===
-document.addEventListener("DOMContentLoaded", () => {
-  const counters = document.querySelectorAll(".count");
-  const speed = 97; // semakin kecil = semakin cepat
+        function onIframeLoad() {
+            clearTimeout(loadTimeout);
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.pointerEvents = 'none';
+            setTimeout(() => loadingOverlay.style.display = 'none', 600);
+        }
 
-  const animateCounter = (counter) => {
-    const target = +counter.getAttribute("data-target");
-    const count = +counter.innerText;
-    const increment = target / speed;
+        function onIframeError() {
+            showError();
+        }
 
-    if (count < target) {
-      counter.innerText = Math.ceil(count + increment);
-      setTimeout(() => animateCounter(counter), 20);
-    } else {
-      counter.innerText = target + (counter.innerText.includes("★") ? "★" : "+");
-    }
-  };
+        // Timeout 12 detik → anggap gagal (beberapa jaringan sekolah/kantor blokir Google)
+        loadTimeout = setTimeout(() => {
+            showError();
+        }, 12000);
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCounter(entry.target);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.5 });
+        function showError() {
+            loadingOverlay.style.display = 'none';
+            errorOverlay.style.display = 'flex';
+        }
+    </script>
 
-  counters.forEach(counter => observer.observe(counter));
-});
-</script>
-
-  <!-- 3. KEUNGGULAN -->
-  <section class="py-28 bg-gray-900">
-    <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-5xl lg:text-6xl font-black text-center mb-20">Keunggulan Bermitra dengan Dunnak</h2>
-      <div class="grid md:grid-cols-3 gap-16">
-        <div class="card glass rounded-3xl p-12 text-center">
-          <i class="fas fa-rocket text-7xl text-emerald-400 mb-8"></i>
-          <h3 class="text-3xl font-black mb-6">AI-Powered Delivery</h3>
-          <p class="text-gray-300 text-lg leading-relaxed">Rute dioptimalkan AI — pengantaran tercepat di Kalibening</p>
-        </div>
-        <div class="card glass rounded-3xl p-12 text-center">
-          <i class="fas fa-chart-line text-7xl text-emerald-400 mb-8"></i>
-          <h3 class="text-3xl font-black mb-6">Dashboard Real-time</h3>
-          <p class="text-gray-300 text-lg leading-relaxed">Pantau penjualan, stok, & performa 24 jam dengan data akurat</p>
-        </div>
-        <div class="card glass rounded-3xl p-12 text-center">
-          <i class="fas fa-shield-alt text-7xl text-emerald-400 mb-8"></i>
-          <h3 class="text-3xl font-black mb-6">Zero Risk Guarantee</h3>
-          <p class="text-gray-300 text-lg leading-relaxed">Bayar di tempat + asuransi gratis untuk setiap order</p>
-        </div>
-      </div>
-    </div>
-  </section>
-<!-- FITUR DASHBOARD MERCHANT – FINAL 2025 (LEVEL UNICORN) -->
-<section class="py-28 lg:py-36 bg-black">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <!-- Judul Premium -->
-    <div class="text-center mb-20">
-      <h2 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight">
-        Dashboard Merchant
-      </h2>
-      <p class="mt-6 text-xl lg:text-2xl text-gray-400 font-light max-w-4xl mx-auto">
-        Semua alat yang Anda butuhkan untuk mengelola bisnis — dalam satu tempat, real-time, berbasis AI.
-      </p>
-    </div>
-
-    <!-- Grid Fitur – 8 Fitur (Lebih Lengkap & Profesional) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-      
-      <!-- 1. Menu Management -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-utensils text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Menu Management</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Tambah, edit, nonaktifkan menu & stok secara real-time dari HP atau komputer.
-          </p>
-        </div>
-      </div>
-
-      <!-- 2. Notifikasi Instan -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-bell text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Notifikasi Instan</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Suara + pop-up + WhatsApp saat ada order masuk — tidak pernah ketinggalan.
-          </p>
-        </div>
-      </div>
-
-      <!-- 3. Advanced Analytics -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-chart-line text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Advanced Analytics</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Grafik penjualan harian, menu terlaris, jam sibuk, dan prediksi order.
-          </p>
-        </div>
-      </div>
-
-      <!-- 4. Priority Support -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-headset text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Priority Support</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Respon < 3 menit via WhatsApp khusus merchant — 24 jam.
-          </p>
-        </div>
-      </div>
-
-      <!-- 5. Promo Otomatis -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-percentage text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Promo Otomatis</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Buat diskon, flash sale, atau gratis ongkir dalam 30 detik.
-          </p>
-        </div>
-      </div>
-
-      <!-- 6. Laporan Keuangan -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-file-invoice-dollar text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Laporan Keuangan</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Rekap pendapatan harian, mingguan, bulanan — siap ekspor PDF.
-          </p>
-        </div>
-      </div>
-
-      <!-- 7. Multi Cabang -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-store text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Multi Cabang</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Kelola banyak toko dari satu dashboard.
-          </p>
-        </div>
-      </div>
-
-      <!-- 8. Integrasi Printer -->
-      <div class="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-10 text-center border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative z-10">
-          <div class="w-24 h-24 mx-auto mb-8 bg-emerald-600/20 rounded-3xl flex items-center justify-center">
-            <i class="fas fa-print text-5xl text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-black text-white mb-4">Cetak Otomatis</h3>
-          <p class="text-gray-300 leading-relaxed">
-            Order langsung tercetak di printer thermal (Bluetooth/USB).
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- TESTIMONI MERCHANT – FINAL 2025 (SERIUS & PROFESIONAL MAKSIMAL) -->
-<section class="py-32 bg-gray-900">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <!-- Header Serius -->
-    <div class="text-center mb-24">
-      <h2 class="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight">
-        Pengalaman Mitra Dunnak
-      </h2>
-      <p class="mt-6 text-xl lg:text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed">
-        Ulasan resmi dari merchant terverifikasi yang telah bergabung sejak peluncuran platform.
-      </p>
-    </div>
-
-    <!-- Grid Testimoni – Layout Corporate Premium -->
-    <div class="grid lg:grid-cols-3 gap-16">
-
-      <!-- Testimoni 1 -->
-      <article class="bg-white/5 backdrop-blur-xl rounded-3xl p-12 border border-white/10 hover:border-emerald-500/30 transition-all duration-500">
-        <header class="flex items-start gap-6 mb-8">
-          <img src="https://randomuser.me/api/portraits/women/44.jpg" 
-               alt="Ibu Siti Rahayu" 
-               class="w-20 h-20 rounded-full object-cover ring-4 ring-white/20">
-          <div>
-            <h3 class="text-2xl font-bold text-white">Ibu Siti Rahayu</h3>
-            <p class="text-gray-400">Pemilik Warung Makan Siti • Kalibening Pusat</p>
-            <p class="text-sm text-gray-500 mt-1">Mitra sejak Februari 2025</p>
-          </div>
-        </header>
-        <div class="flex gap-1 mb-6">
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-        </div>
-        <p class="text-lg leading-relaxed text-gray-200">
-          “Sejak bergabung dengan Dunnak, jumlah pesanan harian meningkat dari rata-rata 12 menjadi 78 transaksi per hari. 
-          Sistem pembayaran mingguan berjalan lancar dan tepat waktu. Dashboard sangat membantu dalam mengelola stok dan menu.”
-        </p>
-      </article>
-
-      <!-- Testimoni 2 -->
-      <article class="bg-white/5 backdrop-blur-xl rounded-3xl p-12 border border-white/10 hover:border-emerald-500/30 transition-all duration-500">
-        <header class="flex items-start gap-6 mb-8">
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" 
-               alt="Bapak Slamet Riyadi" 
-               class="w-20 h-20 rounded-full object-cover ring-4 ring-white/20">
-          <div>
-            <h3 class="text-2xl font-bold text-white">Bapak Slamet Riyadi</h3>
-            <p class="text-gray-400">Pemilik Gorengan Pak Slamet • Gunung Langit</p>
-            <p class="text-sm text-gray-500 mt-1">Mitra sejak Januari 2025</p>
-          </div>
-        </header>
-        <div class="flex gap-1 mb-6">
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-        </div>
-        <p class="text-lg leading-relaxed text-gray-200">
-          “Pembayaran selalu masuk tepat waktu setiap Senin tanpa potongan tersembunyi. 
-          Tim support merespons dalam hitungan menit. Sekarang saya bisa fokus mengembangkan usaha tanpa khawatir operasional pengantaran.”
-        </p>
-      </article>
-
-      <!-- Testimoni 3 -->
-      <article class="bg-white/5 backdrop-blur-xl rounded-3xl p-12 border border-white/10 hover:border-emerald-500/30 transition-all duration-500">
-        <header class="flex items-start gap-6 mb-8">
-          <img src="https://randomuser.me/api/portraits/women/68.jpg" 
-               alt="Ibu Rini Wulandari" 
-               class="w-20 h-20 rounded-full object-cover ring-4 ring-white/20">
-          <div>
-            <h3 class="text-2xl font-bold text-white">Ibu Rini Wulandari</h3>
-            <p class="text-gray-400">Pemilik Es Teh Mamah • Pasar Kalibening</p>
-            <p class="text-sm text-gray-500 mt-1">Mitra sejak Maret 2025</p>
-          </div>
-        </header>
-        <div class="flex gap-1 mb-6">
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-          <i class="fas fa-star text-yellow-500 text-lg"></i>
-        </div>
-        <p class="text-lg leading-relaxed text-gray-200">
-          “Kurir Dunnak sangat disiplin dan ramah. Pelanggan sering memberikan ulasan positif tentang kecepatan pengantaran. 
-          Sekarang saya bisa melayani lebih banyak pelanggan tanpa perlu repot mengantar sendiri.”
-        </p>
-      </article>
-    </div>
-
-    <!-- Footer Section – Statistik Ringkas -->
-    <div class="mt-24 text-center">
-      <p class="text-2xl font-bold text-white">
-        600+ merchant • 15.000+ pelanggan • 4.9/5.0 rating platform
-      </p>
-      <p class="text-gray-400 mt-4">
-        Data per November 2025 — terus bertumbuh setiap hari
-      </p>
-    </div>
-  </div>
-</section>
-  <!-- PROSES PENDAFTARAN MERCHANT – FINAL 2025 (LEVEL UNICORN) -->
-<section class="py-32 bg-white">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <!-- Judul -->
-    <div class="text-center mb-24">
-      <h2 class="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 leading-tight">
-        Proses Pendaftaran Merchant
-      </h2>
-      <p class="mt-6 text-xl lg:text-2xl text-gray-600 font-light max-w-4xl mx-auto">
-        Bergabung menjadi mitra resmi Dunnak dalam <strong class="text-emerald-600">tiga langkah terverifikasi</strong>
-      </p>
-    </div>
-
-    <!-- 3 Langkah – Layout Corporate Premium -->
-    <div class="grid lg:grid-cols-3 gap-16">
-
-      <!-- Langkah 1 -->
-      <div class="group relative bg-white rounded-3xl p-12 text-center border-2 border-gray-200 hover:border-emerald-500 transition-all duration-500 shadow-lg hover:shadow-2xl">
-        <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center text-3xl font-black shadow-2xl">
-          1
-        </div>
-        <svg class="w-20 h-20 mx-auto mb-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-        </svg>
-        <h3 class="text-3xl font-black text-gray-900 mb-6">Kontak Awal</h3>
-        <p class="text-lg text-gray-600 leading-relaxed">
-          Hubungi tim merchant Dunnak melalui WhatsApp resmi atau email.<br>
-          <span class="text-emerald-600 font-semibold">Respon dalam < 10 menit (jam operasional)</span>
-        </p>
-      </div>
-
-      <!-- Langkah 2 -->
-      <div class="group relative bg-white rounded-3xl p-12 text-center border-2 border-gray-200 hover:border-emerald-500 transition-all duration-500 shadow-lg hover:shadow-2xl">
-        <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center text-3xl font-black shadow-2xl">
-          2
-        </div>
-        <svg class="w-20 h-20 mx-auto mb-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        <h3 class="text-3xl font-black text-gray-900 mb-6">Verifikasi & Survey</h3>
-        <p class="text-lg text-gray-600 leading-relaxed">
-          Tim Dunnak akan melakukan verifikasi toko dan survey operasional.<br>
-          <span class="text-emerald-600 font-semibold">Kunjungan dalam 24 jam kerja</span>
-        </p>
-      </div>
-
-      <!-- Langkah 3 -->
-      <div class="group relative bg-white rounded-3xl p-12 text-center border-2 border-gray-200 hover:border-emerald-500 transition-all duration-500 shadow-lg hover:shadow-2xl">
-        <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center text-3xl font-black shadow-2xl">
-          3
-        </div>
-        <svg class="w-20 h-20 mx-auto mb-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <h3 class="text-3xl font-black text-gray-900 mb-6">Aktivasi & Operasional</h3>
-        <p class="text-lg text-gray-600 leading-relaxed">
-          Akun merchant diaktifkan, pelatihan singkat, dan toko langsung terhubung ke sistem Dunnak.<br>
-          <span class="text-emerald-600 font-semibold">Mulai terima order di hari yang sama</span>
-        </p>
-      </div>
-    </div>
-
-    <!-- Info Tambahan -->
-    <div class="mt-24 text-center">
-      <p class="text-xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
-        <strong class="text-emerald-600">Proses pendaftaran 100% gratis</strong> • Tidak ada biaya aktivasi • Tidak ada komisi tersembunyi<br>
-        Seluruh tahapan dilakukan oleh tim resmi Dunnak untuk menjamin kualitas layanan.
-      </p>
-    </div>
-  </div>
-</section>
-
-  <!-- 7. CTA DAFTAR -->
-  <section id="daftar" class="py-40 bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 text-white text-center">
-    <div class="max-w-6xl mx-auto px-6">
-      <h2 class="text-6xl lg:text-8xl font-black mb-12">Jadi Mitra Dunnak Sekarang</h2>
-      <p class="text-3xl lg:text-4xl mb-20 opacity-95">
-        Pendaftaran <strong class="text-yellow-300">100% GRATIS</strong> • Aktivasi <strong class="text-yellow-300">dalam 24 Jam</strong>
-      </p>
-      <div class="flex flex-col lg:flex-row gap-10 justify-center">
-        <a href="https://wa.me/6281234567890?text=Halo%20saya%20mau%20daftar%20merchant%20Dunnak" target="_blank"
-           class="inline-flex items-center justify-center gap-8 bg-white text-emerald-700 font-black text-3xl lg:text-5xl px-24 py-12 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition glow">
-          <i class="fab fa-whatsapp text-6xl lg:text-8xl"></i>
-          Daftar via WhatsApp
-        </a>
-        <a href="mailto:merchant@dunnak.com" 
-           class="inline-flex items-center justify-center gap-8 bg-emerald-700  hover:bg-emerald-800 text-white font-black text-3xl lg:text-5xl px-24 py-12 rounded-full border-8 border-white/30 shadow-2xl transition">
-          <i class="fas fa-envelope text-5xl lg:text-7xl"></i>
-          Kirim Email
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="bg-black py-20 text-center">
-    <div class="max-w-7xl mx-auto px-6">
-      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6-JhY6g9H4ggtXPHCO7pTjErtprKfSRlgttoFgT4LcX-O2ROw-oxj7Ntr3r7cY6TdN5AMrwDJ7hyfyU1DI4ASMZ_Mw2chnMaXIDiWHZ-8X3H1Lhz-PjI7KIh2716aY_g4FIxL2Fe4OxBsIEAyE52WrLYS-p1La1U_mMHuVcQvFK-Np9l-ZixakqnZjx44/s3264/20251120_174337.png" 
-           alt="Dunnak" class="h-16 mx-auto mb-8">
-      <p class="text-3xl font-black text-emerald-400">
-        © 2025 DERVO DIGITAL NIAGA • Kalibening, Indonesia
-      </p>
-      <p class="text-gray-500 mt-4 text-lg">
-        Startup pengantaran berbasis AI • Memberdayakan UMKM Indonesia
-      </p>
-    </div>
-  </footer>
 </body>
 </html>
