@@ -4,38 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulir Resmi – Nama Perusahaan Anda</title>
-    <meta name="description" content="Formulir resmi dan aman.">
+    <meta name="description" content="Formulir resmi dan aman untuk pendaftaran, survei, atau pengajuan.">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <style>
         :root {
-            --primary: #1d4ed8;
-            --primary-dark: #1e3a8a;
-            --gray-50: #f8fafc;
+            --primary: #1e40af;
+            --primary-hover: #1e3a8a;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
             --gray-900: #111827;
-            --success: #059669;
             --danger: #dc2626;
+            --success: #059669;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--gray-50);
-            color: #1e293b;
+            color: var(--gray-800);
+            line-height: 1.6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* HEADER */
+        /* HEADER PREMIUM */
         header {
             background: white;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .header-inner {
             max-width: 1400px;
@@ -47,74 +53,63 @@
             justify-content: space-between;
         }
         .logo img {
-            height: 46px;
-            max-width: 240px;
+            height: 44px;
+            max-width: 220px;
             object-fit: contain;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.95rem;
+            color: var(--gray-600);
         }
         .secure-badge {
             background: rgba(34,197,94,0.1);
             color: var(--success);
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        main { flex: 1; padding: 40px 20px; display: flex; justify-content: center; }
+        /* MAIN */
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .container { width: 100%; max-width: 1000px; }
+
         .card {
-            width: 100%;
-            max-width: 1000px;
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
         }
         .card-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: white;
             padding: 3rem 2rem;
             text-align: center;
         }
-        .card-header h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 12px; }
-        .card-header p { font-size: 1.2rem; opacity: 0.95; }
+        .card-header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; }
+        .card-header p { font-size: 1.15rem; opacity: 0.95; }
 
-        .form-wrapper {
+        .form-container {
             position: relative;
             min-height: 800px;
+            background: white;
         }
+
         iframe {
             width: 100%;
-            height: 96vh;
-            min-height: 740px;
+            height: 95vh;
+            min-height: 720px;
             border: none;
+            display: block;
         }
 
-        /* === YANG PALING PENTING: HILANGKAN SEMUA ELEMEN BAWAAN GOOGLE === */
-        iframe body {
-            overflow: hidden !important;
-        }
-        /* Sembunyikan header Google (logo + tombol "Isi formulir") */
-        .google-header, .freebirdHeaderMast, .freebirdFormviewerViewHeaderMast {
-            display: none !important;
-            height: 0 !important;
-            overflow: hidden !important;
-        }
-        /* Sembunyikan tombol "Buka di tab baru" dan link Google */
-        a[target="_blank"][href*="google.com"], 
-        .freebirdFormviewerViewHeaderOpenInNewTab,
-        .freebirdFormviewerViewNavigationRightButtons {
-            display: none !important;
-        }
-        /* Hilangkan watermark “Powered by Google Forms” */
-        .freebirdFormviewerViewFooterFooterText,
-        .freebirdFormviewerViewFooterEmbeddedFooter {
-            display: none !important;
-        }
-
-        /* Loading & Error */
+        /* Loading & Error States */
         .overlay {
             position: absolute;
             inset: 0;
@@ -124,29 +119,55 @@
             align-items: center;
             justify-content: center;
             gap: 1.5rem;
-            z-index: 10;
+            padding: 2rem;
+            text-align: center;
+            transition: opacity 0.4s;
         }
         .spinner {
-            width: 60px; height: 60px;
-            border: 6px solid #f1f5f9;
+            width: 56px; height: 56px;
+            border: 5px solid #f3f4f6;
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        .error-state {
+            color: var(--danger);
+            max-width: 500px;
+        }
+        .error-state h3 { margin: 1rem 0 0.75rem; font-size: 1.4rem; }
+        .btn-direct {
+            margin-top: 1.5px;
+            background: var(--primary);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .btn-direct:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
         footer {
             background: var(--gray-900);
             color: #94a3b8;
             text-align: center;
-            padding: 2.5rem;
+            padding: 2.5rem 20px;
             font-size: 0.95rem;
         }
         footer a { color: #60a5fa; }
 
         @media (max-width: 768px) {
-            .card-header h1 { font-size: 2rem; }
+            .header-inner { height: 70px; padding: 0 16px; }
+            .logo img { height: 38px; }
             .card-header { padding: 2rem 1.5rem; }
+            .card-header h1 { font-size: 2rem; }
+            iframe { min-height: 680px; }
+        }
+        @media (max-width: 480px) {
+            .secure-badge { font-size: 0.8rem; padding: 5px 10px; }
         }
     </style>
 </head>
@@ -155,42 +176,92 @@
     <header>
         <div class="header-inner">
             <div class="logo">
-                <!-- GANTI DENGAN LOGO KAMU -->
-                <img src="https://via.placeholder.com/240x60/1d4ed8/ffffff?text=LOGO+PERUSAHAAN" alt="Logo Perusahaan">
+                <!-- GANTI DENGAN LOGO KAMU (ukuran ideal: 220x60 px, format PNG/SVG) -->
+                <img src="https://via.placeholder.com/220x60/1e40af/ffffff?text=LOGO+KAMU" alt="Logo Perusahaan">
             </div>
-            <div class="secure-badge">
-                <i class="fas fa-lock"></i> 100% Aman & Terenskripsi
+            <div class="header-right">
+                <div class="secure-badge">
+                    <i class="fas fa-lock"></i>
+                    Aman & Terenskripsi
+                </div>
             </div>
         </div>
     </header>
 
     <main>
-        <div class="card">
-            <div class="card-header">
-                <h1>Formulir Resmi</h1>
-                <p>Isi formulir di bawah ini dengan teliti. Terima kasih atas partisipasi Anda.</p>
-            </div>
-
-            <div class="form-wrapper">
-                <div class="overlay" id="loading">
-                    <div class="spinner"></div>
-                    <div><strong>Memuat formulir...</strong></div>
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Formulir Resmi</h1>
+                    <p>Isi dengan data yang valid. Kami menjaga privasi Anda dengan sangat serius.</p>
                 </div>
 
-                <iframe
-                    src="https://docs.google.com/forms/d/e/1FAIpQLScKpEn0s6kkYi0R1nDKOXkon6Cyv9VRsMPEdxjaKMx03BF42Q/viewform?embedded=true"
-                    onload="document.getElementById('loading').style.display='none';"
-                    allowfullscreen
-                    loading="lazy">
-                </iframe>
+                <div class="form-container" id="formContainer">
+                    <!-- Loading -->
+                    <div class="overlay" id="loadingOverlay">
+                        <div class="spinner"></div>
+                        <div><strong>Memuat formulir dengan aman...</strong><br>Koneksi terenkripsi SSL</div>
+                    </div>
+
+                    <!-- Error Fallback -->
+                    <div class="overlay" id="errorOverlay" style="display:none;">
+                        <i class="fas fa-exclamation-triangle fa-4x" style="color:var(--danger);"></i>
+                        <div class="error-state">
+                            <h3>Formulir tidak dapat dimuat</h3>
+                            <p>Kemungkinan karena pemblokiran jaringan, ekstensi browser, atau masalah sementara Google Forms.</p>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLScKpEn0s6kkYi0R1nDKOXkon6Cyv9VRsMPEdxjaKMx03BF42Q/viewform" 
+                               target="_blank" class="btn-direct">
+                                Buka Formulir di Tab Baru
+                            </a>
+                            <br><br>
+                            <small>Jika masalah berlanjut, hubungi kami di <strong>info@domainkamu.com</strong></small>
+                        </div>
+                    </div>
+
+                    <iframe
+                        src="https://docs.google.com/forms/d/e/1FAIpQLScKpEn0s6kkYi0R1nDKOXkon6Cyv9VRsMPEdxjaKMx03BF42Q/viewform?embedded=true"
+                        onload="onIframeLoad()"
+                        onerror="onIframeError()"
+                        allowfullscreen>
+                        Loading…
+                    </iframe>
+                </div>
             </div>
         </div>
     </main>
 
     <footer>
-        © 2025 <strong>Nama Perusahaan Anda</strong> • Semua hak cipta dilindungi<br>
-        Kontak: <a href="mailto:info@domainkamu.com">info@domainkamu.com</a>
+        © 2025 <strong>Nama Perusahaan Anda</strong>. Semua hak cipta dilindungi.<br>
+        Kontak: <a href="mailto:info@domainkamu.com">info@domainkamu.com</a> | 
+        <a href="https://domainkamu.com" target="_blank">domainkamu.com</a>
     </footer>
+
+    <script>
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const errorOverlay   = document.getElementById('errorOverlay');
+        let loadTimeout;
+
+        function onIframeLoad() {
+            clearTimeout(loadTimeout);
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.pointerEvents = 'none';
+            setTimeout(() => loadingOverlay.style.display = 'none', 600);
+        }
+
+        function onIframeError() {
+            showError();
+        }
+
+        // Timeout 12 detik → anggap gagal (beberapa jaringan sekolah/kantor blokir Google)
+        loadTimeout = setTimeout(() => {
+            showError();
+        }, 12000);
+
+        function showError() {
+            loadingOverlay.style.display = 'none';
+            errorOverlay.style.display = 'flex';
+        }
+    </script>
 
 </body>
 </html>
