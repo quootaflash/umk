@@ -47,7 +47,7 @@
         }
 
         .tanggal { text-align: right; margin-bottom: 10px; }
-        .lampiran-perihal { margin-bottom: 22px; line-height: 1.65; }
+        .perihal { margin-bottom: 28px; line-height: 1.65; }
         .alamat-tujuan { margin-bottom: 28px; }
         .isi-surat { text-align: justify; }
 
@@ -110,7 +110,7 @@
                 
                 <div class="space-y-8">
                     <div>
-                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-4">Data Diri Pelamar</h3>
+                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-4">Data Diri</h3>
                         <input id="nama" type="text" value="Muhammad Hafis" placeholder="Nama Lengkap" 
                                class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none mb-4" oninput="updatePreview()">
                         
@@ -173,8 +173,9 @@ Jakarta Selatan 12910</textarea>
                         </div>
                     </div>
 
+                    <!-- Lampiran tetap di form tapi tidak ditampilkan di surat -->
                     <div>
-                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Lampiran</h3>
+                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Lampiran (tidak akan muncul di surat)</h3>
                         <textarea id="lampiran" rows="3" class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" 
                                   oninput="updatePreview()">1. Fotokopi KTP
 2. Bukti serah terima pekerjaan (jika ada)</textarea>
@@ -215,7 +216,7 @@ Jakarta Selatan 12910</textarea>
             const alamat_perusahaan = document.getElementById('alamat_perusahaan').value;
             const perihal = document.getElementById('perihal').value || "Pengunduran Diri";
             const alasan = document.getElementById('alasan').value.trim();
-            const lampiranText = document.getElementById('lampiran').value.replace(/\n/g, '<br>');
+            // Lampiran diabaikan karena sudah dihapus dari surat
 
             let alasanText = alasan ? `<p>Alasan pengunduran diri ini adalah ${alasan}.</p>` : '';
 
@@ -234,8 +235,8 @@ Jakarta Selatan 12910</textarea>
                     <p>${tanggal}</p>
                 </div>
 
-                <div class="lampiran-perihal">
-                    <p>Lampiran : ${lampiranText || '-'}</p>
+                <!-- Hanya Perihal (tanpa Lampiran) -->
+                <div class="perihal">
                     <p>Perihal : ${perihal}</p>
                 </div>
 
@@ -256,12 +257,10 @@ Jakarta Selatan 12910</textarea>
                     <p>Demikian surat pengunduran diri ini saya buat dengan sebenar-benarnya. Atas perhatian dan kerjasamanya, saya ucapkan terima kasih.</p>
                 </div>
 
-                <div class="mt-10">
+                <div class="mt-12">
                     <p>Hormat saya,</p>
                     <div class="mt-16">
                         <p class="font-semibold">${nama}</p>
-                        <p class="text-sm text-slate-600 mt-5">${alamat}</p>
-                        <p class="text-sm text-slate-600">${telepon} | ${email}</p>
                     </div>
                 </div>
             `;
@@ -313,7 +312,7 @@ Jakarta Selatan 12910</textarea>
                 alasan: document.getElementById('alasan').value,
                 lampiran: document.getElementById('lampiran').value
             };
-            localStorage.setItem('suratPengunduranDiri_Standar_v2', JSON.stringify(data));
+            localStorage.setItem('suratPengunduranDiri_Standar_v3', JSON.stringify(data));
             alert('Draft surat pengunduran diri berhasil disimpan!');
         }
 
