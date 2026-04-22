@@ -3,326 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surat Pengunduran Diri</title>
+    <title>Generator Surat Pengunduran Diri Resmi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
+
+        * { box-sizing: border-box; }
+
+        /* Sistem Toast */
+        .toast-container {
+            position: fixed; bottom: 24px; left: 24px; z-index: 9999;
+            display: flex; flex-direction: column-reverse; gap: 8px; pointer-events: none;
+        }
+        .toast-item {
+            pointer-events: auto;
+            background: #1e293b; color: #f1f5f9; padding: 10px 20px; border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+            display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: 'Inter', sans-serif;
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            border-left: 3px solid #059669;
+        }
+        .toast-item.is-info { border-left-color: #3b82f6; }
+        .toast-item.show { transform: translateY(0); opacity: 1; }
+
+        /* Indikator Auto-Save */
+        .autosave-badge {
+            position: fixed; bottom: 24px; right: 24px; z-index: 9998;
+            font-family: 'Inter', sans-serif; font-size: 11px; color: #94a3b8;
+            display: flex; align-items: center; gap: 6px;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .autosave-badge.visible { opacity: 1; }
+        .autosave-badge .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: #94a3b8;
+        }
+        .autosave-badge.saved .dot { background: #10b981; }
+
+        /* Kertas A4 */
         .a4-paper {
             width: 210mm;
             min-height: 297mm;
             background: white;
-            box-shadow: 0 25px 50px -12px rgb(15 23 42 / 0.15);
-            margin: 30px auto;
-            padding: 18mm 20mm;
-            font-family: 'Inter', system-ui, sans-serif;
-            font-size: 11.8pt;
-            line-height: 1.65;
-            color: #1f2937;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            margin: 0 auto;
+            padding: 25mm 25mm 20mm 30mm;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #111827;
             position: relative;
-            box-sizing: border-box;
+            transition: box-shadow 0.3s ease;
+        }
+        .a4-paper.is-typing {
+            box-shadow: 0 0 0 2px #3b82f6, 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* Elemen Surat */
+        .sec-tanggal { text-align: right; margin-bottom: 16px; }
+        .sec-perihal { margin-bottom: 28px; letter-spacing: 0.2px; }
+        .sec-tujuan { margin-bottom: 32px; line-height: 1.55; }
+        .sec-salam { margin-bottom: 12px; }
+        .sec-isi { text-align: justify; }
+        .sec-isi p { margin-bottom: 12px; }
+        .sec-isi p:last-child { margin-bottom: 0; }
+
+        .tbl-data {
+            margin: 0 0 20px 32px;
+            border-collapse: collapse;
+        }
+        .tbl-data td { padding: 2px 0; vertical-align: top; }
+        .tbl-data td.lbl { width: 170px; white-space: nowrap; }
+        .tbl-data td.sep { width: 12px; text-align: center; }
+        
+        /* PERFECT SIGNATURE BLOCK SYSTEM (FIX BUG) */
+        .sec-ttd { 
+            margin-top: 28px; 
+            /* text-align diatur via inline style oleh sistem */
+        }
+        .ttd-space { 
+            margin-top: 80px; /* BUG FIX: Diganti dari cm ke px. 80px setara 5-6 baris teks, presisi di semua browser */
+        }
+        .ttd-name { 
+            text-decoration: underline; 
+            text-underline-offset: 4px; 
+            text-decoration-thickness: 1px;
+            font-weight: normal; 
+        }
+
+        /* Form System */
+        .form-input {
+            width: 100%; padding: 10px 18px;
+            border: 1.5px solid #e2e8f0; border-radius: 12px;
+            font-family: 'Inter', sans-serif; font-size: 13px;
+            outline: none; background: #f8fafc;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            border-color: #2563eb; background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+        .form-input::placeholder { color: #cbd5e1; }
+        textarea.form-input { resize: none; }
+
+        .section-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.1em; color: #64748b; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-label i { font-size: 10px; color: #94a3b8; }
+
+        /* Toggle Switch Kiri/Kanan */
+        .toggle-container {
+            display: flex; background: #f1f5f9; border-radius: 10px; padding: 3px; gap: 3px;
+        }
+        .toggle-btn {
+            flex: 1; padding: 8px 0; text-align: center; border-radius: 8px;
+            font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer;
+            transition: all 0.2s; border: none; background: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+        .toggle-btn.active {
+            background: white; color: #0f172a; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 0 18px; height: 40px; border-radius: 12px;
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+            border: none; cursor: pointer; transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-ghost { background: rgba(255,255,255,0.08); color: white; }
+        .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.15); }
+        .btn-violet { background: #7c3aed; color: white; }
+        .btn-violet:hover:not(:disabled) { background: #6d28d9; }
+        .btn-green { background: #059669; color: white; }
+        .btn-green:hover:not(:disabled) { background: #047857; }
+        .btn-white { background: white; color: #0f172a; }
+        .btn-white:hover:not(:disabled) { background: #f1f5f9; }
+        .btn-icon { width: 40px; padding: 0; justify-content: center; }
+        .btn-danger-ghost { background: transparent; color: #94a3b8; }
+        .btn-danger-ghost:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        @media (max-width: 768px) {
+            .btn span.lbl-text { display: none; }
+            .a4-paper { font-size: 11pt; padding: 20mm 15mm; }
         }
 
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; margin: 0; padding: 0; }
-            .preview-wrapper { box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+            .preview-wrapper { box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: none !important; }
             .a4-paper {
-                width: 210mm !important;
-                height: auto !important;
-                min-height: 297mm !important;
-                margin: 0 !important;
-                padding: 18mm 20mm !important;
-                box-shadow: none !important;
+                width: 210mm !important; min-height: 297mm !important;
+                margin: 0 !important; padding: 25mm 25mm 20mm 30mm !important;
+                box-shadow: none !important; opacity: 1 !important;
             }
             @page { size: A4 portrait; margin: 0; }
-            *, p, div, span, .data-diri, .isi-surat {
-                overflow: visible !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-            }
-        }
-
-        .tanggal { text-align: right; margin-bottom: 10px; }
-        .perihal { margin-bottom: 28px; line-height: 1.65; }
-        .alamat-tujuan { margin-bottom: 28px; }
-        .isi-surat { text-align: justify; }
-
-        .data-diri {
-            display: grid;
-            grid-template-columns: 140px auto;
-            gap: 5px 15px;
-            line-height: 1.68;
-            margin: 16px 0 22px 0;
-        }
-        .data-diri span.label {
-            text-align: left;
-            font-weight: 500;
-            white-space: nowrap;
+            *, p, div, span, table, tr, td { overflow: visible !important; break-inside: avoid !important; page-break-inside: avoid !important; }
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans">
+<body class="bg-slate-100 font-sans">
+
+    <div id="toastContainer" class="toast-container no-print"></div>
+    <div id="autosaveBadge" class="autosave-badge no-print"><div class="dot"></div><span>Tersimpan otomatis</span></div>
 
     <!-- NAVBAR -->
-    <nav class="bg-slate-950 text-white sticky top-0 z-50 no-print shadow-md">
-        <div class="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-x-3">
-                <i class="fa-solid fa-envelope text-3xl text-red-400"></i>
-                <div>
-                    <h1 class="text-2xl font-semibold tracking-tight">SURAT PENGUNDURAN DIRI</h1>
-                    <p class="text-xs text-slate-400 -mt-0.5">Format Standar Perusahaan Indonesia • Compact</p>
+    <nav class="bg-slate-950 text-white sticky top-0 z-50 no-print shadow-lg">
+        <div class="max-w-[1440px] mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-file-signature text-blue-400 text-sm"></i>
+                </div>
+                <div class="leading-tight">
+                    <h1 class="text-sm font-bold tracking-tight">Surat Pengunduran Diri</h1>
+                    <p class="text-[9px] text-slate-500 font-medium">Reactive State Engine v2.1</p>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-x-3 text-sm">
-                <button onclick="autoSaveDraft()" class="flex items-center gap-x-2 px-5 h-10 bg-white/10 hover:bg-white/20 rounded-2xl font-medium">
-                    <i class="fa-solid fa-floppy-disk"></i> <span class="hidden md:inline">Simpan Draft</span>
+            <div class="flex items-center gap-1.5">
+                <button onclick="AppCore.forceSave()" class="btn btn-ghost">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                    <span class="lbl-text">Simpan</span>
                 </button>
-                <button onclick="saveAsImage()" class="flex items-center gap-x-2 px-5 h-10 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl font-medium">
-                    <i class="fa-solid fa-image"></i> <span class="hidden sm:inline">PNG</span>
+                <div class="w-px h-5 bg-white/10 mx-1"></div>
+                <button id="btnPng" onclick="AppCore.exportPNG()" class="btn btn-violet" disabled>
+                    <i class="fa-solid fa-image text-xs"></i><span class="lbl-text">PNG</span>
                 </button>
-                <button onclick="generatePDF()" class="flex items-center gap-x-2 px-6 h-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-medium">
-                    <i class="fa-solid fa-file-pdf"></i> <span>PDF Surat</span>
+                <button id="btnPdf" onclick="AppCore.exportPDF()" class="btn btn-green" disabled>
+                    <i class="fa-solid fa-file-pdf text-xs"></i><span class="lbl-text">PDF</span>
                 </button>
-                <button onclick="printLetter()" class="flex items-center gap-x-2 px-6 h-10 bg-white text-slate-950 hover:bg-slate-100 rounded-2xl font-medium">
-                    <i class="fa-solid fa-print"></i> <span>Cetak</span>
+                <button id="btnPrint" onclick="AppCore.doPrint()" class="btn btn-white" disabled>
+                    <i class="fa-solid fa-print text-xs"></i><span class="lbl-text">Cetak</span>
                 </button>
-                <button onclick="clearForm()" class="flex items-center justify-center w-10 h-10 text-red-400 hover:text-red-500 rounded-2xl">
-                    <i class="fa-solid fa-trash text-xl"></i>
+                <button onclick="AppCore.resetAll()" class="btn btn-icon btn-danger-ghost" title="Hapus Semua Data">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-screen-2xl mx-auto px-6 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- FORM INPUT -->
-            <div class="lg:col-span-5 bg-white rounded-3xl shadow-xl p-8 no-print overflow-auto max-h-screen">
-                <div class="mb-8">
-                    <h2 class="text-2xl font-semibold text-slate-800">Surat Pengunduran Diri Formal</h2>
-                    <p class="text-red-600 text-sm mt-1">Format Standar Perusahaan Indonesia</p>
-                </div>
-                
-                <div class="space-y-8">
-                    <div>
-                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-4">Data Diri</h3>
-                        <input id="nama" type="text" value="Muhammad Hafis" placeholder="Nama Lengkap" 
-                               class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none mb-4" oninput="updatePreview()">
+    <!-- MAIN CONTENT -->
+    <div class="max-w-[1440px] mx-auto px-4 lg:px-6 py-5">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+            <!-- FORM PANEL -->
+            <div class="lg:col-span-5 no-print">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 h-full flex flex-col">
+                    <div class="px-5 py-3 border-b border-slate-100 flex-shrink-0">
+                        <h2 class="text-xs font-bold text-slate-600">Formulir Data</h2>
+                    </div>
+                    <div class="p-5 space-y-5 overflow-y-auto flex-grow" style="max-height: calc(100vh - 110px);">
                         
-                        <input id="jabatan" type="text" value="IT Support" placeholder="Jabatan" 
-                               class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none mb-4" oninput="updatePreview()">
-
-                        <input id="perusahaan" type="text" value="PT. Teknologi Digital Indonesia" placeholder="Nama Perusahaan" 
-                               class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none mb-4" oninput="updatePreview()">
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <input id="tempat_lahir" type="text" value="Pekalongan" placeholder="Tempat Lahir" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
-                            <input id="tanggal_lahir" type="text" value="15 Mei 2005" placeholder="Tanggal Lahir" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
-                        </div>
-
-                        <input id="alamat" type="text" value="Paninggaran, Pekalongan, Jawa Tengah" placeholder="Alamat Lengkap" 
-                               class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none mt-4" oninput="updatePreview()">
-
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            <input id="telepon" type="tel" value="0856-1234-5678" placeholder="No. Telepon" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
-                            <input id="email" type="email" value="hafis@example.com" placeholder="Email" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Tanggal Surat</h3>
-                            <input id="tanggal" type="text" value="Jakarta, 20 April 2026" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
+                            <div class="section-label"><i class="fa-solid fa-user"></i> Identitas Pemohon</div>
+                            <div class="space-y-2.5">
+                                <input id="fNama" type="text" value="Muhammad Hafis" placeholder="Nama Lengkap (Otomatis Kapital)" class="form-input" oninput="AppCore.triggerChange()">
+                                <div class="grid grid-cols-5 gap-2.5">
+                                    <input id="fJabatan" type="text" value="IT Support" placeholder="Jabatan" class="form-input col-span-2" oninput="AppCore.triggerChange()">
+                                    <input id="fPerusahaan" type="text" value="PT. Teknologi Digital Indonesia" placeholder="Nama Perusahaan" class="form-input col-span-3" oninput="AppCore.triggerChange()">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <input id="fTempatLahir" type="text" value="Pekalongan" placeholder="Tempat Lahir" class="form-input" oninput="AppCore.triggerChange()">
+                                    <input id="fTglLahir" type="text" value="15 Mei 2005" placeholder="Tanggal Lahir" class="form-input" oninput="AppCore.triggerChange()">
+                                </div>
+                                <input id="fAlamat" type="text" value="Paninggaran, Pekalongan, Jawa Tengah" placeholder="Alamat Domisili" class="form-input" oninput="AppCore.triggerChange()">
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <input id="fTelp" type="tel" value="0856-1234-5678" placeholder="No. Telepon" class="form-input" oninput="AppCore.triggerChange()">
+                                    <input id="fEmail" type="email" value="hafis@example.com" placeholder="E-mail" class="form-input" oninput="AppCore.triggerChange()">
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Tanggal Efektif</h3>
-                            <input id="tanggal_efektif" type="text" value="20 Mei 2026" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
-                        </div>
-                    </div>
 
-                    <div>
-                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-4">Alamat Tujuan</h3>
-                        <textarea id="alamat_perusahaan" rows="4" class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" 
-                                  oninput="updatePreview()">Yth. Manager HRD
+                        <div>
+                            <div class="section-label"><i class="fa-solid fa-calendar"></i> Konfigurasi Waktu</div>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block">Tempat, Tanggal Surat</label>
+                                    <input id="fTglSurat" type="text" value="Jakarta, 20 April 2026" class="form-input" oninput="AppCore.triggerChange()">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block">Tanggal Efektif Berhenti</label>
+                                    <input id="fTglEfektif" type="text" value="20 Mei 2026" class="form-input" oninput="AppCore.triggerChange()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="section-label"><i class="fa-solid fa-building-columns"></i> Tujuan Surat</div>
+                            <textarea id="fTujuan" rows="5" class="form-input" oninput="AppCore.triggerChange()">Yth. Bapak/Ibu Manager HRD
 PT. Teknologi Digital Indonesia
-Jl. Sudirman No. 45
+Jl. Jend. Sudirman No. 45
 Jakarta Selatan 12910</textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Perihal</h3>
-                            <input id="perihal" type="text" value="Pengunduran Diri" 
-                                   class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" oninput="updatePreview()">
                         </div>
-                        <div>
-                            <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Alasan (opsional)</h3>
-                            <textarea id="alasan" rows="3" class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" 
-                                      oninput="updatePreview()">Melanjutkan pendidikan</textarea>
-                        </div>
-                    </div>
 
-                    <!-- Lampiran tetap di form tapi tidak ditampilkan di surat -->
-                    <div>
-                        <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Lampiran (tidak akan muncul di surat)</h3>
-                        <textarea id="lampiran" rows="3" class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-red-500 outline-none" 
-                                  oninput="updatePreview()">1. Fotokopi KTP
-2. Bukti serah terima pekerjaan (jika ada)</textarea>
+                        <div>
+                            <div class="section-label"><i class="fa-solid fa-pen-nib"></i> Konten Surat</div>
+                            <div class="space-y-2.5">
+                                <input id="fPerihal" type="text" value="Permohonan Pengunduran Diri" class="form-input" oninput="AppCore.triggerChange()">
+                                <textarea id="fAlasan" rows="3" placeholder="Opsional: Tulis alasan resign" class="form-input" oninput="AppCore.triggerChange()">Untuk melanjutkan pendidikan formal</textarea>
+                            </div>
+                        </div>
+
+                        <!-- PENAMBAHAN FITUR: SETTING POSISI TANDA TANGAN -->
+                        <div>
+                            <div class="section-label"><i class="fa-solid fa-signature"></i> Posisi Tanda Tangan</div>
+                            <div class="toggle-container">
+                                <button type="button" id="btnTtdKiri" class="toggle-btn" onclick="AppCore.setTtdPosisi('Kiri')">
+                                    <i class="fa-solid fa-align-left mr-1.5 text-[10px]"></i> Kiri
+                                </button>
+                                <button type="button" id="btnTtdKanan" class="toggle-btn active" onclick="AppCore.setTtdPosisi('Kanan')">
+                                    <i class="fa-solid fa-align-right mr-1.5 text-[10px]"></i> Kanan
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <!-- PREVIEW -->
+            <!-- PREVIEW PANEL -->
             <div class="lg:col-span-7">
-                <div class="preview-header flex justify-between items-center mb-4 px-2 no-print">
-                    <h3 class="font-semibold text-slate-700 flex items-center gap-x-2">
-                        <i class="fa-solid fa-eye"></i> Pratinjau Surat Pengunduran Diri (Standar Perusahaan)
-                    </h3>
-                    <span class="text-xs bg-red-100 text-red-700 px-4 py-1.5 rounded-3xl">FORMAT A4</span>
+                <div class="flex items-center justify-between mb-2 px-1 no-print">
+                    <span class="text-[11px] font-semibold text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-sparkles text-blue-500 text-[10px]"></i> Live Rendering
+                    </span>
+                    <span class="text-[9px] font-bold text-slate-400 bg-slate-200/60 px-2.5 py-0.5 rounded-full tracking-widest">A4 210x297mm</span>
                 </div>
-                
-                <div class="preview-wrapper bg-white p-6 rounded-3xl shadow-inner overflow-x-auto">
-                    <div id="surat" class="a4-paper mx-auto">
-                        <div id="surat-content"></div>
+                <div class="preview-wrapper bg-slate-200/30 p-3 md:p-5 rounded-2xl overflow-x-auto">
+                    <div id="suratPaper" class="a4-paper">
+                        <div id="suratContent"></div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        function updatePreview() {
-            const nama = document.getElementById('nama').value || "Muhammad Hafis";
-            const jabatan = document.getElementById('jabatan').value || "IT Support";
-            const perusahaan = document.getElementById('perusahaan').value || "PT. Teknologi Digital Indonesia";
-            const tempat_lahir = document.getElementById('tempat_lahir').value || "Pekalongan";
-            const tanggal_lahir = document.getElementById('tanggal_lahir').value || "15 Mei 2005";
-            const alamat = document.getElementById('alamat').value || "Paninggaran, Pekalongan, Jawa Tengah";
-            const telepon = document.getElementById('telepon').value || "0856-1234-5678";
-            const email = document.getElementById('email').value || "hafis@example.com";
-            const tanggal = document.getElementById('tanggal').value || "Jakarta, 20 April 2026";
-            const tanggal_efektif = document.getElementById('tanggal_efektif').value || "20 Mei 2026";
-            const alamat_perusahaan = document.getElementById('alamat_perusahaan').value;
-            const perihal = document.getElementById('perihal').value || "Pengunduran Diri";
-            const alasan = document.getElementById('alasan').value.trim();
-            // Lampiran diabaikan karena sudah dihapus dari surat
+        /* ==============================================
+           ARSITEKTUR STATE MANAGEMENT REACTIVE
+        ============================================== */
+        const AppCore = {
+            state: {},
+            debounceId: null,
+            autoSaveId: null,
+            isDirty: false,
+            STORAGE_KEY: 'sys_surat_resmi_state',
 
-            let alasanText = alasan ? `<p>Alasan pengunduran diri ini adalah ${alasan}.</p>` : '';
+            // Daftar ID input yang akan dipantau
+            inputs: [
+                'fNama', 'fJabatan', 'fPerusahaan', 'fTempatLahir', 'fTglLahir',
+                'fAlamat', 'fTelp', 'fEmail', 'fTglSurat', 'fTglEfektif', 
+                'fTujuan', 'fPerihal', 'fAlasan'
+            ],
 
-            let dataDiriHTML = `
-                <div class="data-diri">
-                    <span class="label">Nama</span> <span>: ${nama}</span>
-                    <span class="label">Jabatan</span> <span>: ${jabatan}</span>
-                    <span class="label">Tempat/Tgl. Lahir</span> <span>: ${tempat_lahir}, ${tanggal_lahir}</span>
-                    <span class="label">Alamat</span> <span>: ${alamat}</span>
-                    <span class="label">No. Telepon</span> <span>: ${telepon}</span>
-                    <span class="label">Email</span> <span>: ${email}</span>
-                </div>`;
+            /* --- INISIALISASI --- */
+            init() {
+                // Default state untuk posisi TTD jika belum ada di storage
+                this.state.fTtdPosisi = 'Kanan'; 
+                this.loadState();
+                this.updateTtdToggleUI();
+                this.render();
+                this.checkValidity();
+                window.addEventListener('beforeunload', (e) => {
+                    if (this.isDirty) { e.preventDefault(); e.returnValue = ''; }
+                });
+            },
 
-            const contentHTML = `
-                <div class="tanggal">
-                    <p>${tanggal}</p>
-                </div>
+            /* --- FITUR BARU: SET POSISI TTD --- */
+            setTtdPosisi(posisi) {
+                this.state.fTtdPosisi = posisi;
+                this.updateTtdToggleUI();
+                this.render();
+                this.isDirty = true;
+                this.scheduleAutoSave();
+            },
 
-                <!-- Hanya Perihal (tanpa Lampiran) -->
-                <div class="perihal">
-                    <p>Perihal : ${perihal}</p>
-                </div>
+            updateTtdToggleUI() {
+                const isKanan = this.state.fTtdPosisi === 'Kanan';
+                document.getElementById('btnTtdKanan').classList.toggle('active', isKanan);
+                document.getElementById('btnTtdKiri').classList.toggle('active', !isKanan);
+            },
 
-                <div class="alamat-tujuan">
-                    <p class="whitespace-pre-line">${alamat_perusahaan || 'Yth. Manager HRD<br>PT. Teknologi Digital Indonesia<br>Jl. Sudirman No. 45<br>Jakarta Selatan 12910'}</p>
-                </div>
+            /* --- TRIGGER DARI INPUT USER --- */
+            triggerChange() {
+                this.isDirty = true;
+                document.getElementById('suratPaper').classList.add('is-typing');
+                document.getElementById('autosaveBadge').classList.remove('visible', 'saved');
 
-                <div class="mb-8">
-                    <p><strong>Dengan hormat,</strong></p>
-                </div>
+                if (this.debounceId) clearTimeout(this.debounceId);
+                this.debounceId = setTimeout(() => {
+                    this.captureState();
+                    this.render();
+                    this.checkValidity();
+                    document.getElementById('suratPaper').classList.remove('is-typing');
+                    this.scheduleAutoSave();
+                }, 150);
+            },
 
-                <div class="isi-surat leading-relaxed space-y-5">
-                    <p>Yang bertanda tangan di bawah ini:</p>
-                    ${dataDiriHTML}
-                    <p>Melalui surat ini, saya mengajukan permohonan pengunduran diri sebagai ${jabatan} di ${perusahaan}, terhitung mulai tanggal ${tanggal_efektif}.</p>
-                    ${alasanText}
-                    <p>Saya mengucapkan terima kasih yang sebesar-besarnya atas kesempatan, bimbingan, dan pengalaman yang telah diberikan selama saya bekerja di perusahaan. Saya siap membantu proses serah terima tugas (handover) agar tidak mengganggu operasional perusahaan.</p>
-                    <p>Demikian surat pengunduran diri ini saya buat dengan sebenar-benarnya. Atas perhatian dan kerjasamanya, saya ucapkan terima kasih.</p>
-                </div>
+            /* --- AMBIL DATA DARI DOM --- */
+            captureState() {
+                this.inputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) this.state[id] = el.value;
+                });
+            },
 
-                <div class="mt-12">
-                    <p>Hormat saya,</p>
-                    <div class="mt-16">
-                        <p class="font-semibold">${nama}</p>
-                    </div>
-                </div>
-            `;
+            /* --- SIMPAN STATE KE DOM --- */
+            applyState() {
+                this.inputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && this.state[id] !== undefined) el.value = this.state[id];
+                });
+            },
 
-            document.getElementById('surat-content').innerHTML = contentHTML;
-        }
+            /* --- SMART TEXT SANITIZER --- */
+            sanitize(str) {
+                if (!str) return '';
+                return str.replace(/\s+/g, ' ').trim();
+            },
 
-        function printLetter() {
-            updatePreview();
-            window.print();
-        }
+            smartName(str) {
+                if (!str) return '..........................................';
+                return str.replace(/\b\w/g, l => l.toUpperCase());
+            },
 
-        function generatePDF() {
-            if (confirm('Simpan sebagai PDF?\n\nPENTING:\n• Margins = None\n• Centang Background graphics\n• Scale = 100%')) {
-                printLetter();
+            smartAlasan(str) {
+                if (!str || str.trim() === '') return '';
+                let clean = this.sanitize(str);
+                if (clean.length > 0) {
+                    clean = clean.charAt(0).toUpperCase() + clean.slice(1);
+                }
+                clean = clean.replace(/[.!]+$/, '');
+                return clean;
+            },
+
+            escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            },
+
+            nl2br(str) {
+                return this.escapeHTML(str).replace(/\n/g, '<br>');
+            },
+
+            /* --- RENDER VIEW --- */
+            render() {
+                try {
+                    const s = this.state;
+                    
+                    const nama        = this.smartName(s.fNama);
+                    const jabatan     = this.sanitize(s.fJabatan) || '..........................................';
+                    const perusahaan  = this.sanitize(s.fPerusahaan) || '..........................................';
+                    const tempatLahir = this.sanitize(s.fTempatLahir) || '..........................................';
+                    const tglLahir    = this.sanitize(s.fTglLahir) || '..........................................';
+                    const alamat      = this.sanitize(s.fAlamat) || '..........................................';
+                    const telp        = this.sanitize(s.fTelp) || '..........................................';
+                    const email       = this.sanitize(s.fEmail) || '..........................................';
+                    const tglSurat    = this.sanitize(s.fTglSurat) || '..........................................';
+                    const tglEfektif  = this.sanitize(s.fTglEfektif) || '..........................................';
+                    const tujuan      = this.sanitize(s.fTujuan) || 'Yth. Bapak/Ibu\nPT. ..........................................';
+                    const perihal     = this.sanitize(s.fPerihal) || 'Permohonan Pengunduran Diri';
+                    const alasan      = this.smartAlasan(s.fAlasan);
+                    
+                    // Logika Posisi Tanda Tangan
+                    const ttdPosisi = s.fTtdPosisi || 'Kanan';
+                    const ttdAlign = (ttdPosisi === 'Kiri') ? 'left' : 'right';
+                    // Padding kanan dihapus jika posisi kiri, agar tidak menggeser terlalu dalam
+                    const ttdPadding = (ttdPosisi === 'Kanan') ? 'padding-right: 24px;' : 'padding-right: 0;';
+
+                    let pAlasan = '';
+                    if (alasan !== '') {
+                        pAlasan = `<p>Adapun yang menjadi alasan pengunduran diri saya adalah ${this.escapeHTML(alasan.toLowerCase())}.</p>`;
+                    }
+
+                    const tblData = `
+                        <tr><td class="lbl">Nama</td><td class="sep">:</td><td class="val">${this.escapeHTML(nama)}</td></tr>
+                        <tr><td class="lbl">Jabatan</td><td class="sep">:</td><td class="val">${this.escapeHTML(jabatan)}</td></tr>
+                        <tr><td class="lbl">Tempat, Tanggal Lahir</td><td class="sep">:</td><td class="val">${this.escapeHTML(tempatLahir)}, ${this.escapeHTML(tglLahir)}</td></tr>
+                        <tr><td class="lbl">Alamat</td><td class="sep">:</td><td class="val">${this.escapeHTML(alamat)}</td></tr>
+                        <tr><td class="lbl">No. Telepon</td><td class="sep">:</td><td class="val">${this.escapeHTML(telp)}</td></tr>
+                        <tr><td class="lbl">Alamat E-mail</td><td class="sep">:</td><td class="val">${this.escapeHTML(email)}</td></tr>`;
+
+                    const html = `
+                        <div class="sec-tanggal"><p>${this.escapeHTML(tglSurat)}</p></div>
+                        
+                        <div class="sec-perihal">
+                            <p>Perihal&emsp;&emsp;&emsp;&emsp;: <strong>${this.escapeHTML(perihal)}</strong></p>
+                        </div>
+                        
+                        <div class="sec-tujuan"><p>${this.nl2br(tujuan)}</p></div>
+                        
+                        <div class="sec-salam"><p>Dengan hormat,</p></div>
+                        
+                        <div class="sec-isi">
+                            <p>Yang bertanda tangan di bawah ini:</p>
+                            <table class="tbl-data"><tbody>${tblData}</tbody></table>
+                            <p>Dengan ini saya bermaksud mengajukan permohonan pengunduran diri dari jabatan <strong>${this.escapeHTML(jabatan)}</strong> di <strong>${this.escapeHTML(perusahaan)}</strong>, terhitung mulai tanggal <strong>${this.escapeHTML(tglEfektif)}</strong>.</p>
+                            ${pAlasan}
+                            <p>Saya mengucapkan terima kasih yang sebesar-besarnya atas kesempatan, bimbingan, serta pengalaman berharga yang telah diberikan selama saya berkarya di perusahaan ini. Saya juga bersedia untuk melaksanakan proses serah terima pekerjaan demi menjaga kelancaran operasional perusahaan.</p>
+                            <p>Demikian surat permohonan ini saya buat dengan sesungguhnya. Besar harapan saya agar Bapak/Ibu berkenan memberikan persetujuan. Atas perhatian dan kerja sama Bapak/Ibu, saya ucapkan terima kasih.</p>
+                        </div>
+                        
+                        <!-- SIGNATURE BLOCK DENGAN POSISI DINAMIS -->
+                        <div class="sec-ttd" style="text-align: ${ttdAlign}; ${ttdPadding}">
+                            <p>Hormat saya,</p>
+                            <div class="ttd-space">
+                                <p class="ttd-name">${this.escapeHTML(nama)}</p>
+                            </div>
+                        </div>`;
+
+                    document.getElementById('suratContent').innerHTML = html;
+
+                } catch (error) {
+                    console.error('Render Error:', error);
+                    document.getElementById('suratContent').innerHTML = `<p style="color:red; font-family:monospace;">Error: ${this.escapeHTML(error.message)}</p>`;
+                }
+            },
+
+            /* --- VALIDASI FORM --- */
+            checkValidity() {
+                const isValid = (this.state.fNama || '').trim() !== '' && (this.state.fJabatan || '').trim() !== '';
+                document.getElementById('btnPng').disabled = !isValid;
+                document.getElementById('btnPdf').disabled = !isValid;
+                document.getElementById('btnPrint').disabled = !isValid;
+            },
+
+            /* --- SISTEM AUTO-SAVE --- */
+            scheduleAutoSave() {
+                if (this.autoSaveId) clearTimeout(this.autoSaveId);
+                this.autoSaveId = setTimeout(() => {
+                    this.forceSave(true);
+                }, 3000);
+            },
+
+            forceSave(isSilent) {
+                try {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+                    this.isDirty = false;
+                    
+                    const badge = document.getElementById('autosaveBadge');
+                    badge.classList.add('visible', 'saved');
+                    setTimeout(() => badge.classList.remove('visible', 'saved'), 2000);
+
+                    if (!isSilent) {
+                        this.showToast('Data berhasil disimpan ke perangkat', 'fa-solid fa-check', '#10b981');
+                    }
+                } catch (e) {
+                    this.showToast('Gagal menyimpan data lokal', 'fa-solid fa-xmark', '#ef4444');
+                }
+            },
+
+            loadState() {
+                try {
+                    const raw = localStorage.getItem(this.STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        // Gabungkan agar fTtdPosisi selalu ada
+                        this.state = { ...this.state, ...parsed }; 
+                        this.applyState();
+                    } else {
+                        this.captureState();
+                    }
+                } catch (e) {
+                    this.captureState();
+                }
+            },
+
+            resetAll() {
+                if (!confirm('Hapus semua data formulir dan reset sistem?')) return;
+                localStorage.removeItem(this.STORAGE_KEY);
+                this.isDirty = false;
+                location.reload();
+            },
+
+            /* --- FUNGSI EXPORT --- */
+            doPrint() {
+                this.render();
+                setTimeout(() => window.print(), 50);
+            },
+
+            exportPDF() {
+                if (!confirm('Simpan sebagai PDF?\n\nPENTING:\n1. Tujuan: "Save as PDF"\n2. Margins: None\n3. Centang: Background graphics\n4. Scale: 100%')) return;
+                this.doPrint();
+            },
+
+            exportPNG() {
+                const btn = document.getElementById('btnPng');
+                btn.disabled = true;
+                this.showToast('Memproses gambar resolusi tinggi...', 'fa-solid fa-spinner fa-spin', '#3b82f6', true);
+
+                this.render();
+
+                setTimeout(() => {
+                    const paper = document.getElementById('suratPaper');
+                    html2canvas(paper, {
+                        scale: 3,
+                        backgroundColor: '#ffffff',
+                        useCORS: true,
+                        logging: false,
+                        height: paper.scrollHeight + 40
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = `Surat_Pengunduran_Diri_${(this.state.fNama || 'File').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}.png`;
+                        link.href = canvas.toDataURL('image/png', 1.0);
+                        link.click();
+                        this.showToast('File PNG berhasil diunduh', 'fa-solid fa-download', '#10b981');
+                        this.checkValidity();
+                    }).catch(err => {
+                        console.error(err);
+                        this.showToast('Gagal memproses gambar', 'fa-solid fa-xmark', '#ef4444');
+                        this.checkValidity();
+                    });
+                }, 200);
+            },
+
+            /* --- SISTEM TOAST --- */
+            showToast(msg, icon, color, isInfo) {
+                const container = document.getElementById('toastContainer');
+                const item = document.createElement('div');
+                item.className = `toast-item ${isInfo ? 'is-info' : ''}`;
+                if(color) item.style.borderLeftColor = color;
+                item.innerHTML = `<i class="${icon || 'fa-solid fa-check'}" style="color:${color || '#10b981'}; font-size: 12px;"></i><span>${msg}</span>`;
+                container.appendChild(item);
+                requestAnimationFrame(() => requestAnimationFrame(() => item.classList.add('show')));
+                setTimeout(() => {
+                    item.classList.remove('show');
+                    setTimeout(() => item.remove(), 300);
+                }, 2500);
             }
-        }
-
-        function saveAsImage() {
-            const surat = document.getElementById('surat');
-            updatePreview();
-            html2canvas(surat, { 
-                scale: 3, 
-                backgroundColor: '#ffffff',
-                useCORS: true,
-                height: surat.scrollHeight + 20
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Surat_Pengunduran_Diri_${document.getElementById('nama').value.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        function autoSaveDraft() {
-            const data = {
-                nama: document.getElementById('nama').value,
-                jabatan: document.getElementById('jabatan').value,
-                perusahaan: document.getElementById('perusahaan').value,
-                tempat_lahir: document.getElementById('tempat_lahir').value,
-                tanggal_lahir: document.getElementById('tanggal_lahir').value,
-                alamat: document.getElementById('alamat').value,
-                telepon: document.getElementById('telepon').value,
-                email: document.getElementById('email').value,
-                tanggal: document.getElementById('tanggal').value,
-                tanggal_efektif: document.getElementById('tanggal_efektif').value,
-                alamat_perusahaan: document.getElementById('alamat_perusahaan').value,
-                perihal: document.getElementById('perihal').value,
-                alasan: document.getElementById('alasan').value,
-                lampiran: document.getElementById('lampiran').value
-            };
-            localStorage.setItem('suratPengunduranDiri_Standar_v3', JSON.stringify(data));
-            alert('Draft surat pengunduran diri berhasil disimpan!');
-        }
-
-        function clearForm() {
-            if (confirm('Reset semua isi surat?')) location.reload();
-        }
-
-        window.onload = () => {
-            updatePreview();
         };
+
+        // Jalankan Sistem saat DOM siap
+        window.addEventListener('DOMContentLoaded', () => AppCore.init());
     </script>
 </body>
 </html>
